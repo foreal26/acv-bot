@@ -184,6 +184,28 @@ const $f5fb98c49704ea09$var$uncommonQuote = {
         }
     }
 };
+const $f5fb98c49704ea09$var$ajaxFuckQuote = {
+    condition: (message)=>message.author.id === "202338054143213568" && message.content.toLowerCase().includes("fuck")
+    ,
+    action: async (message)=>{
+        try {
+            let table = await $f5fb98c49704ea09$var$getTable();
+            table = {
+                rows: table.rows.filter((row)=>row.Author.stringValue.trim().toLowerCase() === "ajjaxx"
+                )
+            };
+            const randIndex = Math.floor(Math.random() * table.rows.length);
+            const row3 = table.rows[randIndex];
+            message.channel.send({
+                embeds: [
+                    $f5fb98c49704ea09$var$embedFromRow(row3)
+                ]
+            });
+        } catch (error) {
+            message.reply("Sorry, but no.");
+        }
+    }
+};
 const $f5fb98c49704ea09$export$2ccc4f72dd956183 = [
     $f5fb98c49704ea09$var$isBot,
     $f5fb98c49704ea09$var$hasGuild,
@@ -194,11 +216,12 @@ const $f5fb98c49704ea09$export$2ccc4f72dd956183 = [
     $f5fb98c49704ea09$var$artemis,
     $f5fb98c49704ea09$var$quote,
     $f5fb98c49704ea09$var$uncommonQuote,
+    $f5fb98c49704ea09$var$ajaxFuckQuote,
     $f5fb98c49704ea09$var$help, 
 ];
 
 
-const $149c1bd638913645$var$token = "ODQ2NzYwMDA3MjgxMjc4OTk2.YK0MtQ.BwFGTTwMPqYE9F16XP7VUJsngtw";
+const $149c1bd638913645$var$token = "ODQ2NzYwMDA3MjgxMjc4OTk2.YK0MtQ.gEZObWGMDeY0RUlnlBqH4kletSA";
 $hgUW1$dayjs.extend($hgUW1$dayjspluginrelativeTime);
 const $149c1bd638913645$var$db = new $hgUW1$keyvhqcore({
     store: new $hgUW1$keyvhqsqlite("sqlite://./database.sqlite")

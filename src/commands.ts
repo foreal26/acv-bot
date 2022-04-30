@@ -152,6 +152,21 @@ const uncommonQuote: Command = {
     }
 }
 
+const ajaxFuckQuote: Command = {
+    condition: (message) => message.author.id === "202338054143213568" && message.content.toLowerCase().includes("fuck"),
+    action: async (message) => {
+        try {
+            let table = await getTable();
+            table = { rows: table.rows.filter(row => row.Author.stringValue.trim().toLowerCase() === "ajjaxx") };
+            const randIndex = Math.floor(Math.random() * table.rows.length);
+            const row = table.rows[randIndex];
+            message.channel.send({ embeds: [embedFromRow(row)] });
+        } catch (error) {
+            message.reply("Sorry, but no.")
+        }
+    }
+}
+
 export const commands: Command[] = [
     isBot,
     hasGuild,
@@ -162,5 +177,6 @@ export const commands: Command[] = [
     artemis,
     quote,
     uncommonQuote,
+    ajaxFuckQuote,
     help,
 ]

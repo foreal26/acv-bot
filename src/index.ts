@@ -6,7 +6,7 @@ import KeyvSQLite from "@keyvhq/sqlite";
 import { commands } from './commands';
 
 
-const token = "ODQ2NzYwMDA3MjgxMjc4OTk2.YK0MtQ.BwFGTTwMPqYE9F16XP7VUJsngtw"
+const token = process.env["DISCORD_TOKEN"]; 
 dayjs.extend(relativeTime)
 
 const db = new Keyv({ store: new KeyvSQLite("sqlite://./database.sqlite") })
