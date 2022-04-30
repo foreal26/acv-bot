@@ -8,8 +8,8 @@ import Sheets from "node-sheets"
 import { authors } from "./commonAuthors";
 dayjs.extend(relativeTime)
 
-const API_KEY = "AIzaSyBKt893Fw-Vnjf0XUHOUUbn2cYCZQCzSGw"
-const SHEET_ID = "19kYjaaPG8zBLbZR6TzSPtLPxnl2IjRCkVFXKPT1WiFA"
+const API_KEY = process.env["GOOGLE_API_KEY"];
+const SHEET_ID = process.env["SHEET_ID"];
 
 const sheetCache = new cache();
 
