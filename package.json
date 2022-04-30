@@ -1,0 +1,32 @@
+{
+  "name": "acv",
+  "version": "1.0.0",
+  "description": "",
+  "source": "src/index.ts",
+  "main": "dist/main.js",
+  "module": "dist/module.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "run": "node index.js",
+    "watch": "parcel watch",
+    "build": "parcel build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/builders": "^0.13.0",
+    "@discordjs/rest": "^0.4.1",
+    "@keyvhq/core": "^1.6.9",
+    "@keyvhq/sqlite": "^1.6.7",
+    "dayjs": "^1.11.1",
+    "discord-api-types": "^0.32.0",
+    "discord.js": "^13.6.0",
+    "node-cache": "^5.1.2",
+    "node-sheets": "^1.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.14.0",
+    "parcel": "^2.5.0"
+  }
+}
