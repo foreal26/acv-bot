@@ -13,4 +13,5 @@ export const authors = new Set([
     "arms of atlas",
     "sal-tal",
     "ward",
+    "ajax"
 ])

@@ -49,9 +49,10 @@ const $36741c77068e1fae$export$545bf518be75e25a = new Set([
 
 
 $hgUW1$dayjs.extend($hgUW1$dayjspluginrelativeTime);
-const $f5fb98c49704ea09$var$API_KEY = "AIzaSyBKt893Fw-Vnjf0XUHOUUbn2cYCZQCzSGw";
+const $f5fb98c49704ea09$var$API_KEY = "AIzaSyC_dK5zo2zzip1Fd5jl1zS80B5V4fV1lmo";
 const $f5fb98c49704ea09$var$SHEET_ID = "19kYjaaPG8zBLbZR6TzSPtLPxnl2IjRCkVFXKPT1WiFA";
 const $f5fb98c49704ea09$var$sheetCache = new $hgUW1$nodecache();
+const $f5fb98c49704ea09$var$randomQueue = [];
 const $f5fb98c49704ea09$var$isBot = {
     condition: (message)=>message.author.bot
     ,
@@ -137,6 +138,18 @@ const $f5fb98c49704ea09$var$embedFromRow = (row)=>{
     const link = row.Link ? row.Link.stringValue.trim() : "";
     return new $hgUW1$MessageEmbed().setTitle(author).setDescription(quote).setURL(link);
 };
+const $f5fb98c49704ea09$var$maintainQueue = ()=>{
+    if ($f5fb98c49704ea09$var$randomQueue.length >= 5) $f5fb98c49704ea09$var$randomQueue.pop();
+};
+const $f5fb98c49704ea09$var$getRandom = (items)=>{
+    const randIndex = Math.floor(Math.random() * items.length);
+    let row = items[randIndex];
+    if ($f5fb98c49704ea09$var$randomQueue.some((q)=>q === row
+    )) row = items[randIndex];
+    else $f5fb98c49704ea09$var$randomQueue.push(row);
+    $f5fb98c49704ea09$var$maintainQueue();
+    return row;
+};
 const $f5fb98c49704ea09$var$quote = {
     condition: (message, client)=>{
         const quoteMeBb = message.mentions.has(client.user) && message.content.includes("quote me bb");
@@ -147,8 +160,7 @@ const $f5fb98c49704ea09$var$quote = {
     action: async (message)=>{
         try {
             const table = await $f5fb98c49704ea09$var$getTable();
-            const randIndex = Math.floor(Math.random() * table.rows.length);
-            const row = table.rows[randIndex];
+            const row = $f5fb98c49704ea09$var$getRandom(table.rows);
             message.channel.send({
                 embeds: [
                     $f5fb98c49704ea09$var$embedFromRow(row)
@@ -172,33 +184,10 @@ const $f5fb98c49704ea09$var$uncommonQuote = {
                 rows: table.rows.filter((row)=>!$36741c77068e1fae$export$545bf518be75e25a.has(row.Author.stringValue.trim().toLowerCase())
                 )
             };
-            const randIndex = Math.floor(Math.random() * table.rows.length);
-            const row1 = table.rows[randIndex];
+            const row1 = $f5fb98c49704ea09$var$getRandom(table.rows);
             message.channel.send({
                 embeds: [
                     $f5fb98c49704ea09$var$embedFromRow(row1)
-                ]
-            });
-        } catch (error) {
-            message.reply("Sorry, but no.");
-        }
-    }
-};
-const $f5fb98c49704ea09$var$ajaxFuckQuote = {
-    condition: (message)=>message.author.id === "202338054143213568" && message.content.toLowerCase().includes("fuck")
-    ,
-    action: async (message)=>{
-        try {
-            let table = await $f5fb98c49704ea09$var$getTable();
-            table = {
-                rows: table.rows.filter((row)=>row.Author.stringValue.trim().toLowerCase() === "ajjaxx"
-                )
-            };
-            const randIndex = Math.floor(Math.random() * table.rows.length);
-            const row3 = table.rows[randIndex];
-            message.channel.send({
-                embeds: [
-                    $f5fb98c49704ea09$var$embedFromRow(row3)
                 ]
             });
         } catch (error) {
@@ -216,12 +205,11 @@ const $f5fb98c49704ea09$export$2ccc4f72dd956183 = [
     $f5fb98c49704ea09$var$artemis,
     $f5fb98c49704ea09$var$quote,
     $f5fb98c49704ea09$var$uncommonQuote,
-    $f5fb98c49704ea09$var$ajaxFuckQuote,
     $f5fb98c49704ea09$var$help, 
 ];
 
 
-const $149c1bd638913645$var$token = "ODQ2NzYwMDA3MjgxMjc4OTk2.YK0MtQ.gEZObWGMDeY0RUlnlBqH4kletSA";
+const $149c1bd638913645$var$token = "ODQ2NzYwMDA3MjgxMjc4OTk2.YK0MtQ.bG8C2yCa7arA2FD1iLnhKYhp1Ek";
 $hgUW1$dayjs.extend($hgUW1$dayjspluginrelativeTime);
 const $149c1bd638913645$var$db = new $hgUW1$keyvhqcore({
     store: new $hgUW1$keyvhqsqlite("sqlite://./database.sqlite")

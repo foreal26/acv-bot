@@ -52,9 +52,10 @@ const $6099fd90fafeb558$export$545bf518be75e25a = new Set([
 
 
 ($parcel$interopDefault($8zHUo$dayjs)).extend(($parcel$interopDefault($8zHUo$dayjspluginrelativeTime)));
-const $bd0f1b2466eebd0a$var$API_KEY = "AIzaSyBKt893Fw-Vnjf0XUHOUUbn2cYCZQCzSGw";
+const $bd0f1b2466eebd0a$var$API_KEY = "AIzaSyC_dK5zo2zzip1Fd5jl1zS80B5V4fV1lmo";
 const $bd0f1b2466eebd0a$var$SHEET_ID = "19kYjaaPG8zBLbZR6TzSPtLPxnl2IjRCkVFXKPT1WiFA";
 const $bd0f1b2466eebd0a$var$sheetCache = new ($parcel$interopDefault($8zHUo$nodecache))();
+const $bd0f1b2466eebd0a$var$randomQueue = [];
 const $bd0f1b2466eebd0a$var$isBot = {
     condition: (message)=>message.author.bot
     ,
@@ -140,6 +141,18 @@ const $bd0f1b2466eebd0a$var$embedFromRow = (row)=>{
     const link = row.Link ? row.Link.stringValue.trim() : "";
     return new $8zHUo$discordjs.MessageEmbed().setTitle(author).setDescription(quote).setURL(link);
 };
+const $bd0f1b2466eebd0a$var$maintainQueue = ()=>{
+    if ($bd0f1b2466eebd0a$var$randomQueue.length >= 5) $bd0f1b2466eebd0a$var$randomQueue.pop();
+};
+const $bd0f1b2466eebd0a$var$getRandom = (items)=>{
+    const randIndex = Math.floor(Math.random() * items.length);
+    let row = items[randIndex];
+    if ($bd0f1b2466eebd0a$var$randomQueue.some((q)=>q === row
+    )) row = items[randIndex];
+    else $bd0f1b2466eebd0a$var$randomQueue.push(row);
+    $bd0f1b2466eebd0a$var$maintainQueue();
+    return row;
+};
 const $bd0f1b2466eebd0a$var$quote = {
     condition: (message, client)=>{
         const quoteMeBb = message.mentions.has(client.user) && message.content.includes("quote me bb");
@@ -150,8 +163,7 @@ const $bd0f1b2466eebd0a$var$quote = {
     action: async (message)=>{
         try {
             const table = await $bd0f1b2466eebd0a$var$getTable();
-            const randIndex = Math.floor(Math.random() * table.rows.length);
-            const row = table.rows[randIndex];
+            const row = $bd0f1b2466eebd0a$var$getRandom(table.rows);
             message.channel.send({
                 embeds: [
                     $bd0f1b2466eebd0a$var$embedFromRow(row)
@@ -175,33 +187,10 @@ const $bd0f1b2466eebd0a$var$uncommonQuote = {
                 rows: table.rows.filter((row)=>!$6099fd90fafeb558$export$545bf518be75e25a.has(row.Author.stringValue.trim().toLowerCase())
                 )
             };
-            const randIndex = Math.floor(Math.random() * table.rows.length);
-            const row1 = table.rows[randIndex];
+            const row1 = $bd0f1b2466eebd0a$var$getRandom(table.rows);
             message.channel.send({
                 embeds: [
                     $bd0f1b2466eebd0a$var$embedFromRow(row1)
-                ]
-            });
-        } catch (error) {
-            message.reply("Sorry, but no.");
-        }
-    }
-};
-const $bd0f1b2466eebd0a$var$ajaxFuckQuote = {
-    condition: (message)=>message.author.id === "202338054143213568" && message.content.toLowerCase().includes("fuck")
-    ,
-    action: async (message)=>{
-        try {
-            let table = await $bd0f1b2466eebd0a$var$getTable();
-            table = {
-                rows: table.rows.filter((row)=>row.Author.stringValue.trim().toLowerCase() === "ajjaxx"
-                )
-            };
-            const randIndex = Math.floor(Math.random() * table.rows.length);
-            const row3 = table.rows[randIndex];
-            message.channel.send({
-                embeds: [
-                    $bd0f1b2466eebd0a$var$embedFromRow(row3)
                 ]
             });
         } catch (error) {
@@ -219,12 +208,11 @@ const $bd0f1b2466eebd0a$export$2ccc4f72dd956183 = [
     $bd0f1b2466eebd0a$var$artemis,
     $bd0f1b2466eebd0a$var$quote,
     $bd0f1b2466eebd0a$var$uncommonQuote,
-    $bd0f1b2466eebd0a$var$ajaxFuckQuote,
     $bd0f1b2466eebd0a$var$help, 
 ];
 
 
-const $882b6d93070905b3$var$token = "ODQ2NzYwMDA3MjgxMjc4OTk2.YK0MtQ.gEZObWGMDeY0RUlnlBqH4kletSA";
+const $882b6d93070905b3$var$token = "ODQ2NzYwMDA3MjgxMjc4OTk2.YK0MtQ.bG8C2yCa7arA2FD1iLnhKYhp1Ek";
 ($parcel$interopDefault($8zHUo$dayjs)).extend(($parcel$interopDefault($8zHUo$dayjspluginrelativeTime)));
 const $882b6d93070905b3$var$db = new ($parcel$interopDefault($8zHUo$keyvhqcore))({
     store: new ($parcel$interopDefault($8zHUo$keyvhqsqlite))("sqlite://./database.sqlite")

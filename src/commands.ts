@@ -12,6 +12,7 @@ const API_KEY = process.env["GOOGLE_API_KEY"];
 const SHEET_ID = process.env["SHEET_ID"];
 
 const sheetCache = new cache();
+const randomQueue: Row[] = [];
 
 type Command = {
     condition: (message: Message, client: Client) => boolean,
@@ -104,7 +105,7 @@ const getTable = async () => {
     return table;
 }
 
-const embedFromRow = (row) => {
+const embedFromRow = (row: Row) => {
     const author = row.Author.stringValue.trim()
     const quote = row.Quote.stringValue.trim()
     const link = row.Link ? row.Link.stringValue.trim() : ""
@@ -112,6 +113,24 @@ const embedFromRow = (row) => {
         .setTitle(author)
         .setDescription(quote)
         .setURL(link);
+}
+
+const maintainQueue = () => {
+    if (randomQueue.length >= 5) {
+        randomQueue.pop()
+    }
+}
+
+const getRandom = (items: Row[]): Row => {
+    const randIndex = Math.floor(Math.random() * items.length);
+    let row = items[randIndex];
+    if (randomQueue.some(q => q === row)) {
+        row = items[randIndex];
+    } else {
+        randomQueue.push(row)
+    }
+    maintainQueue()
+    return row
 }
 
 const quote: Command = {
@@ -124,8 +143,7 @@ const quote: Command = {
     action: async (message) => {
         try {
             const table = await getTable();
-            const randIndex = Math.floor(Math.random() * table.rows.length);
-            const row = table.rows[randIndex];
+            const row = getRandom(table.rows);
             message.channel.send({ embeds: [embedFromRow(row)] });
         } catch (error) {
             message.reply("Sorry, but no.")
@@ -143,8 +161,7 @@ const uncommonQuote: Command = {
         try {
             let table = await getTable();
             table = { rows: table.rows.filter(row => !authors.has(row.Author.stringValue.trim().toLowerCase())) };
-            const randIndex = Math.floor(Math.random() * table.rows.length);
-            const row = table.rows[randIndex];
+            const row = getRandom(table.rows)
             message.channel.send({ embeds: [embedFromRow(row)] });
         } catch (error) {
             message.reply("Sorry, but no.")
@@ -152,20 +169,6 @@ const uncommonQuote: Command = {
     }
 }
 
-const ajaxFuckQuote: Command = {
-    condition: (message) => message.author.id === "202338054143213568" && message.content.toLowerCase().includes("fuck"),
-    action: async (message) => {
-        try {
-            let table = await getTable();
-            table = { rows: table.rows.filter(row => row.Author.stringValue.trim().toLowerCase() === "ajjaxx") };
-            const randIndex = Math.floor(Math.random() * table.rows.length);
-            const row = table.rows[randIndex];
-            message.channel.send({ embeds: [embedFromRow(row)] });
-        } catch (error) {
-            message.reply("Sorry, but no.")
-        }
-    }
-}
 
 export const commands: Command[] = [
     isBot,
@@ -177,6 +180,5 @@ export const commands: Command[] = [
     artemis,
     quote,
     uncommonQuote,
-    ajaxFuckQuote,
     help,
 ]
