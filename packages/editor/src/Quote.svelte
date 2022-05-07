@@ -4,6 +4,7 @@
 	import Cancel from "./lib/icons/Cancel.svelte"
 	import Dialog from "./Dialog.svelte"
 	import type { DialogProps } from "./lib/types/dialog"
+	import { Action } from "./lib/types/constants"
 	export let quote
 	let dialogProps: DialogProps | { active: false } = { active: false }
 	let editMode = false
@@ -25,7 +26,7 @@
 				on:click={() => {
 					dialogProps = {
 						...quote,
-						action: "edit",
+						action: Action.EDIT,
 						active: true,
 						disableDialog: () => (dialogProps = { active: false }),
 					}
@@ -60,7 +61,7 @@
 				on:click={() => {
 					dialogProps = {
 						...quote,
-						action: "delete",
+						action: Action.DELETE,
 						active: true,
 						disableDialog: () => (dialogProps = { active: false }),
 					}

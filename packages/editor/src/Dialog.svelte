@@ -1,17 +1,18 @@
 <script lang="ts">
 	import Submit from "./lib/icons/Submit.svelte"
 	import Cancel from "./lib/icons/Cancel.svelte"
+	import { Action } from "./lib/types/constants"
 	export let author: string
 	export let quote: string
 	export let timestamp: string
-	export let action: string
+	export let action: Action
 	export let disableDialog: () => void
 	let password: string
 	let res = ""
 
 	const submit = async () => {
 		const response = await fetch(`https://tools.flowerpotprompts.com/quote/${action}?timestamp=${timestamp}`, {
-			method: "POST",
+			method: action === Action.DELETE ? "DELETE" : "POST",
 			headers: {
 				Authorization: `Bearer ${password}`,
 			},
