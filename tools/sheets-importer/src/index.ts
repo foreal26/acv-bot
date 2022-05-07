@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 import Sheets from "node-sheets"
 const prisma = new PrismaClient()
 
-
 const getTable = async () => {
     const gs = new Sheets(process.env["SHEET_ID"]);
     await gs.authorizeApiKey(process.env["GOOGLE_API_KEY"]);
