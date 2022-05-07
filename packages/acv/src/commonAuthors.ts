@@ -1,10 +1,12 @@
 export const authors = new Set([
     "darknessenthroned",
+    "darkness enthroned",
     "davidtheathenai",
     "ajjaxx",
     "theblack'sresurgence",
     "durararaaa",
     "liberty1prime",
+    "liberty prime",
     "djkopper",
     "sophprosyne",
     "charlennette",
@@ -12,6 +14,6 @@ export const authors = new Set([
     "aci100",
     "arms of atlas",
     "sal-tal",
-    "ward",
+    "wardywoo",
     "ajax"
 ])

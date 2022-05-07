@@ -3,16 +3,19 @@ import { Client, Message, MessageEmbed } from "discord.js"
 import { resetClock, shouldReset } from "./helpers";
 import dayjs from "dayjs";
 import relativeTime from 'dayjs/plugin/relativeTime';
-import cache from "node-cache"
-import Sheets from "node-sheets"
+// import cache from "node-cache"
+// import Sheets from "node-sheets"
+import { PrismaClient, quotes } from '@prisma/client'
+
 import { authors } from "./commonAuthors";
 dayjs.extend(relativeTime)
 
 const API_KEY = process.env["GOOGLE_API_KEY"];
 const SHEET_ID = process.env["SHEET_ID"];
 
-const sheetCache = new cache();
-const randomQueue: Row[] = [];
+// const sheetCache = new cache();
+const randomQueue: quotes[] = [];
+const prisma = new PrismaClient()
 
 type Command = {
     condition: (message: Message, client: Client) => boolean,
@@ -93,26 +96,41 @@ type GSheet = {
     rows: Row[]
 }
 
+// const getTable = async () => {
+//     let table: GSheet = sheetCache.get('quotes')
+//     if (!table) {
+//         console.log("not in cache, fetching")
+//         const gs = new Sheets(SHEET_ID);
+//         await gs.authorizeApiKey(API_KEY);
+//         table = await gs.tables("Responses!A:D");
+//         sheetCache.set('quotes', table, 300);
+//     }
+//     return table;
+// }
+
 const getTable = async () => {
-    let table: GSheet = sheetCache.get('quotes')
-    if (!table) {
-        console.log("not in cache, fetching")
-        const gs = new Sheets(SHEET_ID);
-        await gs.authorizeApiKey(API_KEY);
-        table = await gs.tables("Responses!A:D");
-        sheetCache.set('quotes', table, 300);
-    }
-    return table;
+    return prisma.quotes.findMany();
 }
 
-const embedFromRow = (row: Row) => {
-    const author = row.Author.stringValue.trim()
-    const quote = row.Quote.stringValue.trim()
-    const link = row.Link ? row.Link.stringValue.trim() : ""
+// const embedFromRow = (row: Row) => {
+//     const author = row.Author.stringValue.trim()
+//     const quote = row.Quote.stringValue.trim()
+//     let link = row.Link ? row.Link.stringValue.trim() : ""
+//     if (!link.match(/^https?:\/\//)) {
+//         link = "https://" + link
+//     }
+//     return new MessageEmbed()
+//         .setTitle(author)
+//         .setDescription(quote)
+//         .setURL(link);
+// }
+
+const embedFromRow = (row: quotes) => {
+    const { author, quote, link } = row;
     return new MessageEmbed()
         .setTitle(author)
         .setDescription(quote)
-        .setURL(link);
+        .setURL(link.match(/^https?:\/\//) ? link : "https://" + link);
 }
 
 const maintainQueue = () => {
@@ -121,11 +139,25 @@ const maintainQueue = () => {
     }
 }
 
-const getRandom = (items: Row[]): Row => {
+// const getRandom = (items: Row[]): Row => {
+//     const randIndex = Math.floor(Math.random() * items.length);
+//     let row = items[randIndex];
+//     if (randomQueue.some(q => q === row || q.author === row.author)) {
+//         console.log("Found dupe, rerandomizing")
+//         row = items[Math.floor(Math.random() * items.length)];
+//     } else {
+//         randomQueue.push(row)
+//     }
+//     maintainQueue()
+//     return row
+// }
+
+const getRandom = (items: quotes[]): quotes => {
     const randIndex = Math.floor(Math.random() * items.length);
     let row = items[randIndex];
-    if (randomQueue.some(q => q === row)) {
-        row = items[randIndex];
+    if (randomQueue.some(q => q === row || q.author === row.author)) {
+        console.log("Found dupe, rerandomizing")
+        row = items[Math.floor(Math.random() * items.length)];
     } else {
         randomQueue.push(row)
     }
@@ -136,14 +168,27 @@ const getRandom = (items: Row[]): Row => {
 const quote: Command = {
     condition: (message, client) => {
         const quoteMeBb = message.mentions.has(client.user) && message.content.includes("quote me bb")
-        const isRedDragon = message.author.id === "160158668422119424" && message.content.includes("quiet") && message.content.includes("night");
+        const partOfDay = message.content.includes("night") ||
+            message.content.includes("day") ||
+            message.content.includes("evening") ||
+            message.content.includes("in here");
+        const isRedDragon = message.author.id === "160158668422119424" && message.content.includes("quiet") && partOfDay;
         const isQuote = message.content === "!quote"
         return quoteMeBb || isRedDragon || isQuote;
     },
     action: async (message) => {
+        const partOfDay = message.content.includes("night") ||
+            message.content.includes("day") ||
+            message.content.includes("evening") ||
+            message.content.includes("in here");
+        const isRedDragon = message.author.id === "160158668422119424" && message.content.includes("quiet") && partOfDay;
+        if (isRedDragon) {
+            message.reply("I got you bb. Have a quote! :heartforyou:")
+        }
+
         try {
             const table = await getTable();
-            const row = getRandom(table.rows);
+            const row = getRandom(table);
             message.channel.send({ embeds: [embedFromRow(row)] });
         } catch (error) {
             message.reply("Sorry, but no.")
@@ -155,13 +200,47 @@ const uncommonQuote: Command = {
     condition: (message, client) => {
         const quoteMeBb = message.mentions.has(client.user) && message.content.includes("throw me a gem bb")
         const isQuote = message.content === "!quote"
-        return quoteMeBb || isQuote;
+        return quoteMeBb;
     },
     action: async (message) => {
         try {
-            let table = await getTable();
-            table = { rows: table.rows.filter(row => !authors.has(row.Author.stringValue.trim().toLowerCase())) };
-            const row = getRandom(table.rows)
+            const table = (await getTable()).filter(row => !authors.has(row.author.trim().toLowerCase()));
+            const row = getRandom(table)
+            message.channel.send({ embeds: [embedFromRow(row)] });
+        } catch (error) {
+            message.reply("Sorry, but no.")
+        }
+    }
+}
+
+const libQuote: Command = {
+    condition: (message, client) => {
+        const quoteMeBb = message.mentions.has(client.user) && message.content.includes("quote me boo")
+        return quoteMeBb;
+    },
+    action: async (message) => {
+        try {
+            const table = (await getTable()).filter(row => {
+                const cleaned = row.author.trim().toLowerCase()
+                return cleaned
+                    .includes("liberty1prime") || cleaned.includes("gomez3600")
+            });
+            const row = getRandom(table)
+            message.channel.send({ embeds: [embedFromRow(row)] });
+        } catch (error) {
+            message.reply("Sorry, but no.")
+        }
+    }
+}
+
+const latest: Command = {
+    condition: (message, client) => {
+        const quoteMeBb = message.mentions.has(client.user) && message.content.includes("gimme the latest")
+        return quoteMeBb;
+    },
+    action: async (message) => {
+        try {
+            const row = await prisma.quotes.findFirst({ orderBy: [{ timestamp: 'desc' }] })
             message.channel.send({ embeds: [embedFromRow(row)] });
         } catch (error) {
             message.reply("Sorry, but no.")
@@ -180,5 +259,7 @@ export const commands: Command[] = [
     artemis,
     quote,
     uncommonQuote,
+    libQuote,
+    latest,
     help,
 ]

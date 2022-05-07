@@ -1,0 +1,29 @@
+{
+  "name": "fetcher",
+  "version": "1.0.0",
+  "description": "",
+  "source": "src/index.ts",
+  "main": "dist/main.js",
+  "module": "dist/module.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "run": "node dist/main.js",
+    "watch": "parcel watch",
+    "build": "parcel build",
+    "dev": "parcel"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "parcel": "^2.5.0",
+    "prisma": "^3.13.0"
+  },
+  "dependencies": {
+    "@fastify/cors": "^7.0.0",
+    "@fastify/rate-limit": "^6.0.0",
+    "@fastify/static": "^5.0.2",
+    "@prisma/client": "^3.13.0",
+    "fastify": "^3.29.0"
+  }
+}
