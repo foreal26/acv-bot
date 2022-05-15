@@ -25,7 +25,7 @@ async function main() {
         const quote = row.Quote.stringValue.trim()
         let link = row.Link ? row.Link.stringValue.trim() : ""
         if (!link.match(/^https?:\/\//)) {
-            link = "https://" + link
+            link = null
         }
         await prisma.quotes.create({
             data: { timestamp, author, quote, link }

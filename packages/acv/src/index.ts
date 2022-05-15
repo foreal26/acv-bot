@@ -6,10 +6,10 @@ import KeyvSQLite from "@keyvhq/sqlite";
 import { commands } from './commands';
 
 
-const token = process.env["DISCORD_TOKEN"]; 
+const token = process.env["DISCORD_TOKEN"];
 dayjs.extend(relativeTime)
 
-const db = new Keyv({ store: new KeyvSQLite("sqlite://./database.sqlite") })
+const db = new Keyv({ store: new KeyvSQLite(`sqlite://./keyv.db`) })
 
 const client = new Client({
     intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],

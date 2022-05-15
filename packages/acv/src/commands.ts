@@ -3,12 +3,14 @@ import { Client, Message, MessageEmbed } from "discord.js"
 import { resetClock, shouldReset } from "./helpers";
 import dayjs from "dayjs";
 import relativeTime from 'dayjs/plugin/relativeTime';
+import dayOfYear from "dayjs/plugin/dayOfYear";
 // import cache from "node-cache"
 // import Sheets from "node-sheets"
 import { PrismaClient, quotes } from '@prisma/client'
 
 import { authors } from "./commonAuthors";
 dayjs.extend(relativeTime)
+dayjs.extend(dayOfYear)
 
 const API_KEY = process.env["GOOGLE_API_KEY"];
 const SHEET_ID = process.env["SHEET_ID"];
@@ -127,10 +129,15 @@ const getTable = async () => {
 
 const embedFromRow = (row: quotes) => {
     const { author, quote, link } = row;
-    return new MessageEmbed()
+    let embed = new MessageEmbed()
         .setTitle(author)
         .setDescription(quote)
-        .setURL(link.match(/^https?:\/\//) ? link : "https://" + link);
+    if (link) {
+        return embed.setURL(link);
+    } else {
+        return embed;
+    }
+
 }
 
 const maintainQueue = () => {
@@ -176,14 +183,25 @@ const quote: Command = {
         const isQuote = message.content === "!quote"
         return quoteMeBb || isRedDragon || isQuote;
     },
-    action: async (message) => {
+    action: async (message, db) => {
         const partOfDay = message.content.includes("night") ||
             message.content.includes("day") ||
             message.content.includes("evening") ||
             message.content.includes("in here");
         const isRedDragon = message.author.id === "160158668422119424" && message.content.includes("quiet") && partOfDay;
         if (isRedDragon) {
-            message.reply("I got you bb. Have a quote! :heartforyou:")
+            message.channel.send("I got you bb. Have a quote! :heartforyou:")
+        }
+
+        if (message.author.id === "564623926425288704") {
+            const lastRun = await db.get('ward');
+            if (lastRun) {
+                const asDate = dayjs(lastRun);
+                if (asDate.dayOfYear() !== dayjs().dayOfYear()) {
+                    message.channel.send("Hi bb. Love ya. Here's a totally not Sci-Fi/AI quote for ya.")
+                }
+            }
+            await db.set('ward', dayjs().toJSON())
         }
 
         try {
@@ -191,6 +209,7 @@ const quote: Command = {
             const row = getRandom(table);
             message.channel.send({ embeds: [embedFromRow(row)] });
         } catch (error) {
+            console.log(error)
             message.reply("Sorry, but no.")
         }
     }
@@ -199,7 +218,6 @@ const quote: Command = {
 const uncommonQuote: Command = {
     condition: (message, client) => {
         const quoteMeBb = message.mentions.has(client.user) && message.content.includes("throw me a gem bb")
-        const isQuote = message.content === "!quote"
         return quoteMeBb;
     },
     action: async (message) => {
