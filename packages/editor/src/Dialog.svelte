@@ -15,6 +15,7 @@
 			method: action === Action.DELETE ? "DELETE" : "POST",
 			headers: {
 				Authorization: `Bearer ${password}`,
+				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({ author, quote, timestamp }),
 		})

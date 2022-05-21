@@ -212,6 +212,7 @@ const quote: Command = {
             console.log(error)
             message.reply("Sorry, but no.")
         }
+
     }
 }
 
@@ -253,14 +254,26 @@ const libQuote: Command = {
 
 const latest: Command = {
     condition: (message, client) => {
-        const quoteMeBb = message.mentions.has(client.user) && message.content.includes("gimme the latest")
+        const quoteMeBb = message.mentions.has(client.user) && /quote ([a-z-_ A-Z0-9]*) bb$/.test(message.content)
         return quoteMeBb;
     },
     action: async (message) => {
         try {
-            const row = await prisma.quotes.findFirst({ orderBy: [{ timestamp: 'desc' }] })
-            message.channel.send({ embeds: [embedFromRow(row)] });
+            const regexMatch = /quote ([a-z-_ A-Z0-9]*) bb$/.exec(message.content)
+            if (regexMatch) {
+                const table = await prisma.quotes.findMany({
+                    where: {
+                        author: {
+                            contains: regexMatch[1]
+                        }
+                    }
+                })
+                const randIndex = Math.floor(Math.random() * table.length);
+                const row = table[randIndex];
+                message.channel.send({ embeds: [embedFromRow(row)] });
+            }
         } catch (error) {
+            console.log(error)
             message.reply("Sorry, but no.")
         }
     }
