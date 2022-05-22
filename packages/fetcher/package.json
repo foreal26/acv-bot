@@ -10,7 +10,8 @@
     "run": "node dist/main.js",
     "watch": "parcel watch",
     "build": "parcel build",
-    "dev": "parcel"
+    "dev": "parcel build && node dist/main.js",
+    "deploy": "pm2 restart fetcher --update-env"
   },
   "keywords": [],
   "author": "",
